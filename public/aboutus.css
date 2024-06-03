@@ -1,0 +1,95 @@
+/* aboutus.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+header {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 0;
+}
+
+header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+header nav ul li {
+    margin: 0 15px;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+header nav ul li a:hover {
+    text-decoration: underline;
+}
+
+.hero {
+    background: url('/images/hero-bg.jpg') no-repeat center center/cover;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+}
+
+.hero-content {
+    background-color: rgba(0, 123, 255, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+.hero p {
+    margin: 10px 0 0;
+    font-size: 1.2em;
+}
+
+.content {
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content h2 {
+    color: #007BFF;
+    margin-top: 0;
+}
+
+.content p, .content ul {
+    line-height: 1.6;
+}
+
+.content ul {
+    padding-left: 20px;
+}
+
+.content ul li {
+    margin-bottom: 10px;
+}
+
+footer {
+    background-color: #007BFF;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
