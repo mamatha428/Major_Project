@@ -1,7 +1,10 @@
+
+//require('dotenv').config();
 const express=require("express");
 const app=express();
 const mysql=require("mysql2");
 const session = require('express-session');
+const nodemailer = require('nodemailer');
 const port=8080;
 const path=require("path");
 
@@ -16,6 +19,8 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+
+
 
 
 
@@ -62,6 +67,19 @@ const connection=mysql.createConnection({
     }catch(err){
       console.log(err);
     }*/
+
+
+// Nodemailer setup
+/*
+const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
+    },
+});*/
+
+
 app.get("/home",(req,res)=>{
     res.render("home.ejs");
 });
@@ -69,6 +87,43 @@ app.get("/home",(req,res)=>{
 app.get("/contact",(req,res)=>{
     res.render("contactus.ejs");
 })
+app.post('/contact', (req, res) => {
+    const { name, message } = req.body;
+
+    const query = "INSERT INTO feedback (name, message) VALUES (?, ?)";
+    
+    connection.query(query, [name, message], (err, results) => {
+        if (err) {
+            console.error('Error inserting feedback:', err);
+            res.status(500).send('Server Error');
+            return;
+        }
+
+        res.redirect('/contact?success=true');
+    });
+});
+
+/*
+app.post('/send-email', (req, res) => {
+    const { name, email, message } = req.body;
+
+    const mailOptions = {
+        from: email, // The sender's email address (provided by the user)
+        to: 'b191428@rgukt.ac.in', // The email address where you want to receive the contact form submissions
+        subject: 'New Contact Form Submission',
+        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send('Error sending email');
+        }
+        res.send('Email sent: ' + info.response);
+    });
+});
+*/
+
 
 app.get("/about",(req,res)=>{
     res.render("aboutus.ejs");

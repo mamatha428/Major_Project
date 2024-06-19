@@ -29,7 +29,7 @@
                 </div>
                 <div class="info-item">
                     <h2>Email</h2>
-                    <p><a href="mailto:support@digitallibrary.com">support@digitallibrary.com</a></p>
+                    <p><a href="mailto:b191428@rgukt.ac.in">b191428@rgukt.ac.in</a></p>
                 </div>
                 <div class="info-item">
                     <h2>Phone</h2>
@@ -39,15 +39,12 @@
         </section>
         <section class="contact-form">
             <h2>Send Us a Message</h2>
-            <form action="/send-message" method="POST">
+            <form action="/contact" method="POST">
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input type="text" id="name" name="name" required>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
+               
                 <div class="form-group">
                     <label for="message">Message</label>
                     <textarea id="message" name="message" rows="5" required></textarea>
@@ -63,5 +60,14 @@
     <footer>
         <p>&copy; 2024 Digital Library. All rights reserved.</p>
     </footer>
+    <script>
+        // Check if there's a success query parameter in the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('success')) {
+            alert('Message sent successfully!');
+            // Remove the success parameter from the URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    </script>
 </body>
 </html>
