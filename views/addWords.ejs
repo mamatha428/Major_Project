@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Words</title>
+    
+    <link rel="stylesheet" href="addCategory.css" />
+  </head>
+  <body>
+    <div id="top">
+      <header id="header">
+        <h1>RECOGNITION OF DIGITAL HARASSMENT</h1>
+        <p>ON WEB-BASED SOCIAL CHANNELS</p>
+      </header>
+      <nav id="topbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="add-category">Add Category</a></li>
+          <li><a href="add-words">Add Words</a></li>
+          <li><a href="cyberharasser">Cyber Harasser</a></li>
+          <li><a href="logout">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div id="content">
+      <h2>Add Words to Category</h2>
+      <form action="/add-words" method="POST">
+        <label for="category">Select Category:</label>
+        <select id="category" name="category" required>
+          <option value="" disabled selected>Select a category</option>
+          <% categories.forEach((category) => { %>
+            <option value="<%= category.id %>"><%= category.name %></option>
+          <% }) %>
+        </select>
+
+        <label for="word">Add Word:</label>
+        <input type="text" id="word" name="word" placeholder="Enter a word" required />
+
+        <button type="submit">Add Word</button>
+      </form>
+    </div>
+  </body>
+</html>

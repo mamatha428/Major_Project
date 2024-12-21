@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyberharassers</title>
+</head>
+<body>
+    <h1>Posts with Harmful Content</h1>
+    <ul>
+        <% for (const postId in harmfulPosts) { %>
+            <li>
+                <strong>Title:</strong> <%= harmfulPosts[postId].title %><br>
+                <strong>Content:</strong> <%= harmfulPosts[postId].content %><br>
+                <strong>Matches:</strong>
+                <ul>
+                    <% harmfulPosts[postId].matches.forEach(match => { %>
+                        <li><%= match %></li>
+                    <% }) %>
+                </ul>
+            </li>
+        <% } %>
+    </ul>
+</body>
+</html>

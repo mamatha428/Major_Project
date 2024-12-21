@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Posts - User Home</title>
+    <link rel="stylesheet" href="viewPosts.css">
+</head>
+<body>
+    <div id="top">
+        <header id="header">
+            <h1>RECOGNITION OF DIGITAL HARASSMENT</h1>
+            <p>ON WEB-BASED SOCIAL CHANNELS</p>
+        </header>
+        <nav id="topbar">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/post-content">Post Content</a></li>
+                <li><a href="/view-all-posts">View All Posts</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+    <main id="content">
+        <h2>All Posts</h2>
+        <ul>
+            <% posts.forEach(post => { %>
+                <li class="post-item">
+                    <h3><%= post.title %></h3>
+                    <p><%= post.content %></p>
+                    <img src="<%= post.image_path %>" alt="<%= post.title %> Image">
+                    <p><em>Posted on: <%= post.created_at.toLocaleString() %></em></p>
+                    <!-- Comments Section -->
+                    <div class="comments-section">
+                        <h4>Comments</h4>
+                        <% if(post.comments && post.comments.length > 0) { %>
+                            <ul>
+                                <% post.comments.forEach(comment => { %>
+                                    <li><%= comment.text %> - <em><%= comment.author %></em></li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <p>No comments yet. Be the first to comment!</p>
+                        <% } %>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+    </main>
+    <footer id="footer">
+        <p>© 2024 Your Company. All rights reserved.</p>
+    </footer>
+</body>
+</html>

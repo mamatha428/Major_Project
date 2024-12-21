@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Content - User Home</title>
+    <link rel="stylesheet" href="postContent.css">
+</head>
+<body>
+    <div id="top">
+        <header id="header">
+            <h1>RECOGNITION OF DIGITAL HARASSMENT</h1>
+            <p>ON WEB-BASED SOCIAL CHANNELS</p>
+        </header>
+        <nav id="topbar">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/post-content">Post Content</a></li>
+                <li><a href="/view-all-posts">View All Posts</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div id="intro">
+        <h2>Post Content to Public</h2>
+        <form action="/submit-content" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div>
+                <label for="content">Content:</label>
+                <textarea id="content" name="content" required></textarea>
+            </div>
+            <div>
+                <label for="image">Upload Image:</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+            </div>
+            <button type="submit">Post Content</button>
+        </form>
+    </div>
+    <footer id="footer">
+        <p>© 2024 Your Company. All rights reserved.</p>
+    </footer>
+</body>
+</html>

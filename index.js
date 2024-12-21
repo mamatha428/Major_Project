@@ -1,18 +1,29 @@
-
-//require('dotenv').config();
-const express=require("express");
-const app=express();
-const mysql=require("mysql2");
+const express = require("express");
+const app = express();
+const mysql = require("mysql2");
 const session = require('express-session');
 const nodemailer = require('nodemailer');
-const port=8080;
-const path=require("path");
+const port = 3000;
+const path = require("path");
+const multer = require("multer");
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/"); // Folder to store uploaded images
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + file.originalname); // Rename file with timestamp
+    },
+});
 
-app.use(express.urlencoded({extended:true}));
-app.set("view engine","ejs");
-app.set("views",path.join(__dirname,"views"));
-app.use(express.static(path.join(__dirname,"public")));
+const upload = multer({ storage: storage });
+
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "public")));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(session({
     secret: 'your-secret-key',
@@ -20,691 +31,350 @@ app.use(session({
     saveUninitialized: true
 }));
 
+const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    database: "delta",
+    password: "rgukt123",
+});
 
-
-
-
-let systems=[
-    {
-        sysno:"100",
-        sysstatus:"Allotted"
-    },
-    {
-        sysno:"101",
-        sysstatus:"Allotted"
-    },
-    {
-        sysno:"102",
-        sysstatus:"Not alotted"
-    }
-]
-
-
-const connection=mysql.createConnection({
-    host:"localhost",
-    user:"root",
-    database:"delta",
-    password:"rgukt123",
-  });
-
-  connection.connect((err) => {
+connection.connect((err) => {
     if (err) {
         console.error('Error connecting to the database:', err);
         return;
     }
     console.log('Connected to the MySQL server.');
 });
-/*
-  let q="select count(*) from students";
-  try{
-    connection.query(q,(err,result)=>{
-      if(err) throw err;
-      //let count=result[0]["count(*)"];
-        console.log(result[0]["count(*)"]);
-      //  res.send(result[0]["count(*)"]);
-      //res.render("home.ejs",{count});
-    });
-    }catch(err){
-      console.log(err);
-    }*/
 
-
-// Nodemailer setup
-/*
-const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-    },
-});*/
-
-
-app.get("/home",(req,res)=>{
+// Home route
+app.get("/", (req, res) => {
     res.render("home.ejs");
 });
 
-app.get("/contact",(req,res)=>{
-    res.render("contactus.ejs");
-})
-app.post('/contact', (req, res) => {
-    const { name, message } = req.body;
-
-    const query = "INSERT INTO feedback (name, message) VALUES (?, ?)";
-    
-    connection.query(query, [name, message], (err, results) => {
-        if (err) {
-            console.error('Error inserting feedback:', err);
-            res.status(500).send('Server Error');
-            return;
-        }
-
-        res.redirect('/contact?success=true');
-    });
+// Admin home route
+app.get("/admin-home", (req, res) => {
+    const message = req.session.message || null; // Retrieve the message from the session
+    req.session.message = null; // Clear the message after using it
+    res.render("adminHome.ejs", { message });
 });
-
-/*
-app.post('/send-email', (req, res) => {
-    const { name, email, message } = req.body;
-
-    const mailOptions = {
-        from: email, // The sender's email address (provided by the user)
-        to: 'b191428@rgukt.ac.in', // The email address where you want to receive the contact form submissions
-        subject: 'New Contact Form Submission',
-        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error(error);
-            return res.status(500).send('Error sending email');
-        }
-        res.send('Email sent: ' + info.response);
-    });
-});
-*/
-
-
-app.get("/about",(req,res)=>{
-    res.render("aboutus.ejs");
-})
-
-
-// Student dashboard route
-app.get("/dashboard", (req, res) => {
-    const email = req.session.email;
-    if (!email) {
-        return res.redirect('/login');
-    }
-
-    const query = "SELECT * FROM notes_student WHERE student_email = ?";
-
-    connection.query(query, [email], (err, results) => {
-        if (err) {
-            console.error('Error fetching notes:', err);
-            res.status(500).send("An error occurred.");
-            return;
-        }
-
-        res.render('dashboard', { email: email, notes: results });
-    });
-});
-
-/*
-app.get("/dashboard", (req, res) => {
-   
-    const email = req.session.email;
-    const query = "SELECT * FROM notes_student WHERE student_email = ?";
-
-    connection.query(query, [email], (err, results) => {
-        if (err) {
-            console.error('Error fetching notes:', err);
-            res.status(500).send("An error occurred.");
-            return;
-        }
-
-        res.render('dashboard', { email: email, notes: results });
-    });
-});*/
-
-
-/*app.get("/dlview",(req,res)=>{
-    res.render("dlview.ejs",{systems});
-});*/
-/*
-app.get("/dlview", (req, res) => {
-    const query = "SELECT * FROM systems";
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching data from the database:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        res.render("dlview.ejs", { systems: results });
-    });
-});*/
-app.get("/dlview", (req, res) => {
-    const queryCounts = `
-        SELECT
-            SUM(CASE WHEN sysstatus = 'free' THEN 1 ELSE 0 END) AS freeCount,
-            SUM(CASE WHEN sysstatus = 'allotted' THEN 1 ELSE 0 END) AS allottedCount,
-            SUM(CASE WHEN sysstatus = 'emergency' THEN 1 ELSE 0 END) AS emergencyCount
-        FROM systems`;
-
-    const querySystems = "SELECT * FROM systems";
-
-    connection.query(queryCounts, (err, countResults) => {
-        if (err) {
-            console.error('Error querying counts:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        connection.query(querySystems, (err, systemsResults) => {
-            if (err) {
-                console.error('Error querying systems:', err);
-                res.status(500).send('Internal Server Error');
-                return;
-            }
-
-            const { freeCount, allottedCount, emergencyCount } = countResults[0];
-            res.render("dlview.ejs", {
-                systems: systemsResults,
-                freeCount,
-                allottedCount,
-                emergencyCount
-            });
-        });
-    });
-});
-
-
-app.get("/admindlview", (req, res) => {
-    const queryCounts = `
-        SELECT
-            SUM(CASE WHEN sysstatus = 'free' THEN 1 ELSE 0 END) AS freeCount,
-            SUM(CASE WHEN sysstatus = 'allotted' THEN 1 ELSE 0 END) AS allottedCount,
-            SUM(CASE WHEN sysstatus = 'emergency' THEN 1 ELSE 0 END) AS emergencyCount
-        FROM systems`;
-
-    const querySystems = "SELECT * FROM systems";
-
-    connection.query(queryCounts, (err, countResults) => {
-        if (err) {
-            console.error('Error querying counts:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        connection.query(querySystems, (err, systemsResults) => {
-            if (err) {
-                console.error('Error querying systems:', err);
-                res.status(500).send('Internal Server Error');
-                return;
-            }
-
-            const { freeCount, allottedCount, emergencyCount } = countResults[0];
-            res.render("admindlview.ejs", {
-                systems: systemsResults,
-                freeCount,
-                allottedCount,
-                emergencyCount
-            });
-        });
-    });
-});
-
-app.get("/dlview/new",(req,res)=>{
-    res.render("systemForm.ejs");
-});
-
-//app.get("/dlview/getsystem",(req,res)=>{
-  //  res.render("systemForm.ejs");
-//});
-/*
-app.post("/dlview",(req,res)=>{
-    let {sysno,sysstatus}=req.body;
-    systems.push({sysno,sysstatus});
-    res.redirect("/dlview");
-});*/
-/*
-app.post("/dlview", (req, res) => {
-    const { sysno, sysstatus } = req.body;
-    const queryCheck = "SELECT * FROM systems WHERE sysno = ? AND sysstatus = 'free'";
-    const queryUpdate = "UPDATE systems SET sysstatus = ? WHERE sysno = ?";
-    
-    connection.query(queryCheck, [sysno], (err, results) => {
-        if (err) {
-            console.error('Error checking system status:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        
-        if (results.length === 0) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("System is not free or does not exist."); window.location.href="/dlview/new";</script>');
-        } else {
-            connection.query(queryUpdate, [sysstatus, sysno], (err, results) => {
-                if (err) {
-                    console.error('Error updating system status:', err);
-                    res.status(500).send('Internal Server Error');
-                    return;
-                }
-                res.redirect("/dlview");
-            });
-        }
-    });
-});*/
-app.post("/dlview", (req, res) => {
-    const { sysno, sysstatus } = req.body;
-    
-    // Check if the system exists and its status
-    const queryCheck = "SELECT * FROM systems WHERE sysno = ?";
-    // Update the system status
-    const queryUpdate = "UPDATE systems SET sysstatus = ? WHERE sysno = ?";
-
-    connection.query(queryCheck, [sysno], (err, results) => {
-        if (err) {
-            console.error('Error checking system status:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        if (results.length === 0) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("System does not exist."); window.location.href="/dlview/new";</script>');
-        } else {
-            const currentStatus = results[0].sysstatus;
-            if ((currentStatus === 'free' && sysstatus === 'allotted') ||
-                (currentStatus === 'allotted' && sysstatus === 'emergency') ||
-                (currentStatus === 'free' && sysstatus === 'emergency')) {
-                connection.query(queryUpdate, [sysstatus, sysno], (err, updateResults) => {
-                    if (err) {
-                        console.error('Error updating system status:', err);
-                        res.status(500).send('Internal Server Error');
-                        return;
-                    }
-                    res.redirect("/dlview");
-                });
-            } else {
-                res.setHeader('Content-Type', 'text/html');
-                res.send('<script>alert("Invalid status change."); window.location.href="/dlview/new";</script>');
-            }
-        }
-    });
-});
-
-app.post("/admindlview", (req, res) => {
-    const { sysno, sysstatus } = req.body;
-    
-    // Check if the system exists and its status
-    const queryCheck = "SELECT * FROM systems WHERE sysno = ?";
-    // Update the system status
-    const queryUpdate = "UPDATE systems SET sysstatus = ? WHERE sysno = ?";
-
-    connection.query(queryCheck, [sysno], (err, results) => {
-        if (err) {
-            console.error('Error checking system status:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        if (results.length === 0) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("System does not exist."); window.location.href="/dlview/new";</script>');
-        } else {
-            const currentStatus = results[0].sysstatus;
-            if ((currentStatus === 'free' && sysstatus === 'allotted') ||
-                (currentStatus === 'allotted' && sysstatus === 'emergency') ||
-                (currentStatus === 'free' && sysstatus === 'emergency')) {
-                connection.query(queryUpdate, [sysstatus, sysno], (err, updateResults) => {
-                    if (err) {
-                        console.error('Error updating system status:', err);
-                        res.status(500).send('Internal Server Error');
-                        return;
-                    }
-                    res.redirect("/admindlview");
-                });
-            } else {
-                res.setHeader('Content-Type', 'text/html');
-                res.send('<script>alert("Invalid status change."); window.location.href="/dlview/new";</script>');
-            }
-        }
-    });
-});
-
-
-app.get("/admin",(req,res)=>{
-    res.render("adminLogin.ejs");
-})
-
-app.get("/login",(req,res)=>{
-    res.render("login.ejs");
-});
-/*
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    const query = "SELECT * FROM students WHERE email = ? AND password = ?";
-
-    connection.query(query, [email, password], (err, results) => {
-        if (err) {
-            console.error('Error during query execution:', err);
-            res.send('<script>alert("An error occurred. Please try again."); window.location.href="/login";</script>');
-            return;
-        }
-
-        if (results.length > 0) {
-            res.send('<script>alert("Login successful!"); window.location.href="/dlview";</script>');
-        } else {
-            res.send('<script>alert("Invalid email or password."); window.location.href="/home";</script>');
-        }
-    });
-});*/
-
 
 // Admin login route
-app.post("/admin", (req, res) => {
+app.get("/admin", (req, res) => {
+    res.render("adminLogin.ejs");
+});
+// Admin login POST request
+app.post("/adminLogin", (req, res) => {
     const { username, password } = req.body;
-    const query = "SELECT * FROM admin WHERE username = ? AND password = ?";
 
+    // Query to check admin credentials
+    const query = "SELECT * FROM adminTable WHERE username = ? AND password = ?";
     connection.query(query, [username, password], (err, results) => {
         if (err) {
-            console.error('Error during query execution:', err);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("An error occurred. Please try again."); window.location.href="/login";</script>');
-            return;
+            console.error("Error during database query:", err);
+            return res.send("Error occurred, please try again later.");
         }
 
         if (results.length > 0) {
-            console.log("Admin login successful for user:", username);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("Login successful!"); window.location.href="/admindlview";</script>');
+            // Set session variables
+            req.session.adminLoggedIn = true;
+            req.session.adminUsername = username;
+
+            // Add a success message in the session
+            req.session.message = "Login successful! Welcome, " + username + ".";
+
+            // Redirect to admin home
+            res.redirect("/admin-home");
         } else {
-            console.log("Invalid admin login attempt for user:", username);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("Invalid username or password."); window.location.href="/home";</script>');
-        }
-    });
-});
-/*
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    const query = "SELECT * FROM students WHERE email = ? AND password = ?";
-
-    connection.query(query, [email, password], (err, results) => {
-        if (err) {
-            console.error('Error during query execution:', err);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("An error occurred. Please try again."); window.location.href="/login";</script>');
-            return;
-        }
-
-        if (results.length > 0) {
-            console.log("Login successful for user:", email);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("Login successful!"); window.location.href="/dlview";</script>');
-        } else {
-            console.log("Invalid login attempt for user:", email);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("Invalid email or password."); window.location.href="/home";</script>');
-        }
-    });
-});*/
-
-
-// Login route
-/*
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    const query = "SELECT * FROM students WHERE email = ? AND password = ?";
-
-    connection.query(query, [email, password], (err, results) => {
-        if (err) {
-            console.error('Error during query execution:', err);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("An error occurred. Please try again."); window.location.href="/login";</script>');
-            return;
-        }
-
-        if (results.length > 0) {
-            console.log("Login successful for user:", email);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("Login successful!");</script>');
-            req.session.email = email;
-            res.redirect('/dashboard');
-        } else {
-            console.log("Invalid login attempt for user:", email);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("Invalid email or password."); window.location.href="/home";</script>');
-        }
-    });
-});*/
-/*
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    const query = "SELECT * FROM students WHERE email = ? AND password = ?";
-
-    connection.query(query, [email, password], (err, results) => {
-        if (err) {
-            console.error('Error during query execution:', err);
-            if (!res.headersSent) {
-                res.setHeader('Content-Type', 'text/html');
-                res.send('<script>alert("An error occurred. Please try again."); window.location.href="/login";</script>');
-            }
-            return;
-        }
-
-        if (results.length > 0) {
-            console.log("Login successful for user:", email);
-            if (!res.headersSent) {
-                res.setHeader('Content-Type', 'text/html');
-                res.send('<script>alert("Login successful!"); window.location.href="/dashboard";</script>');
-            }
-        } else {
-            console.log("Invalid login attempt for user:", email);
-            if (!res.headersSent) {
-                res.setHeader('Content-Type', 'text/html');
-                res.send('<script>alert("Invalid email or password."); window.location.href="/home";</script>');
-            }
-        }
-    });
-});
-*/
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    const query = "SELECT * FROM students WHERE email = ? AND password = ?";
-
-    connection.query(query, [email, password], (err, results) => {
-        if (err) {
-            console.error('Error during query execution:', err);
-            if (!res.headersSent) {
-                res.setHeader('Content-Type', 'text/html');
-                res.send('<script>alert("An error occurred. Please try again."); window.location.href="/login";</script>');
-            }
-            return;
-        }
-
-        if (results.length > 0) {
-            console.log("Login successful for user:", email);
-            req.session.email = email; // Set the email in the session
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("Login successful!"); window.location.href="/dashboard";</script>');
-        } else {
-            console.log("Invalid login attempt for user:", email);
-            if (!res.headersSent) {
-                res.setHeader('Content-Type', 'text/html');
-                res.send('<script>alert("Invalid email or password."); window.location.href="/home";</script>');
-            }
+            // Invalid credentials
+            res.send(`<script>alert('Invalid Username and Password'); window.location.href='/admin';</script>`);
         }
     });
 });
 
-
-/*
-// Route to add a new note
-app.post("/add-note", (req, res) => {
-    
-    const { email, note } = req.body;
-    const query = "INSERT INTO notes_student(student_email, note_text) VALUES (?, ?)";
-
-    connection.query(query, [req.session.email, note], (err, results) => {
-        if (err) {
-            console.error('Error adding note:', err);
-            res.status(500).send("An error occurred.");
-            return;
-        }
-
-        res.redirect(`/dashboard`);
-    });
-});
-*/
-
-app.post("/add-note", (req, res) => {
-    const email = req.session.email; // Get the email from the session
-    const { note } = req.body;
-
-    if (!email) {
-        return res.redirect('/login');
-    }
-
-    const query = "INSERT INTO notes_student (student_email, note_text) VALUES (?, ?)";
-
-    connection.query(query, [email, note], (err, results) => {
-        if (err) {
-            console.error('Error adding note:', err);
-            res.status(500).send("An error occurred.");
-            return;
-        }
-
-        res.redirect(`/dashboard`);
-    });
-});
-
-// Logout route
+// Admin log out route
 app.get("/logout", (req, res) => {
+    // Destroy the session
     req.session.destroy((err) => {
         if (err) {
-            console.error('Error destroying session:', err);
-            return;
+            console.error("Error during session destruction:", err);
+            return res.send("Error occurred while logging out. Please try again.");
         }
-        res.redirect('/login');
+
+        // Redirect to the login page or home page after logout
+        res.redirect("/");
     });
 });
 
-app.get("/signup", (req, res) => {
-    res.render("signup.ejs");
+// User login route
+app.get("/user", (req, res) => {
+    res.render("userLogin.ejs");
 });
+// Login Form Submission
+app.post('/userLogin', (req, res) => {
+    const { username, password } = req.body;
 
-
-app.post("/signup", (req, res) => {
-    const { email, password } = req.body;
-    const query = "INSERT INTO students (email, password) VALUES (?, ?)";
-
-    connection.query(query, [email, password], (err, results) => {
+    // Validate user credentials
+    const loginQuery = 'SELECT * FROM userMajor WHERE username = ? AND password = ?';
+    connection.query(loginQuery, [username, password], (err, results) => {
         if (err) {
-            console.error('Error during query execution:', err);
-            res.setHeader('Content-Type', 'text/html');
-            res.send('<script>alert("An error occurred. Please try again."); window.location.href="/signup";</script>');
-            return;
+            console.error('Error validating user:', err);
+            return res.status(500).send('Database error');
         }
 
-        console.log("User registered successfully:", email);
-        res.setHeader('Content-Type', 'text/html');
-        res.send('<script>alert("Sign up successful!"); window.location.href="/dlview";</script>');
-    });
-});
-/*
-app.get("/freeDetails",(req,res)=>{
-    res.render("free.ejs");
-})*/
-
-app.get("/freeDetails", (req, res) => {
-    // Query to retrieve system numbers that are free
-    const query = "SELECT sysno FROM systems WHERE sysstatus = 'free'";
-
-    connection.query(query, (error, results) => {
-        if (error) {
-            console.error("Error fetching free system numbers:", error);
-            res.status(500).send("Error fetching free system numbers");
-            return;
+        if (results.length === 0) {
+            // Invalid username or password
+            res.send(`(<script>alert('Invalid Username and Password'); window.location.href='/user';</script>`);
+        } else {
+            // Login successful, set session and redirect to userHome
+            req.session.userLoggedIn = true;
+            req.session.user = results[0]; // Store the user object in session
+            res.redirect("/userHome"); // Use res.redirect() for proper redirection
         }
-
-        // Extract system numbers from the results
-        const freeSystemNumbers = results.map(result => result.sysno);
-
-        // Render the "free.ejs" template and pass the free system numbers data to it
-        res.render("free.ejs", { freeSystemNumbers });
-
-        // Close the MySQL connection
-        
     });
 });
 
-/*
-app.get("/emergencyDetails",(req,res)=>{
-    res.render("emergency.ejs");
-})
-*/
+// Registration form route
+app.get("/register", (req, res) => {
+    res.render("registration.ejs");
+});
 
-app.get("/emergencyDetails", (req, res) => {
-    // Query to retrieve system numbers that are free
-    const query = "SELECT sysno FROM systems WHERE sysstatus = 'emergency'";
+// Registration Form Submission
+app.post('/register', (req, res) => {
+    const { name, email, mobile, address, username, password } = req.body;
 
-    connection.query(query, (error, results) => {
-        if (error) {
-            console.error("Error fetching free system numbers:", error);
-            res.status(500).send("Error fetching free system numbers");
-            return;
+    // Check if the username already exists
+    const checkUserQuery = 'SELECT * FROM userMajor WHERE username = ?';
+    connection.query(checkUserQuery, [username], (err, results) => {
+        if (err) {
+            console.error('Error checking user existence:', err);
+            return res.status(500).send('Database error');
         }
 
-        // Extract system numbers from the results
-        const freeSystemNumbers = results.map(result => result.sysno);
+        if (results.length > 0) {
+            return res.send('Username already exists. Please choose another username.');
+        }
 
-        // Render the "free.ejs" template and pass the free system numbers data to it
-        res.render("emergency.ejs", { freeSystemNumbers });
+        // Insert new user into the database
+        const insertQuery = 'INSERT INTO userMajor (name, email, mobile, address, username, password) VALUES (?, ?, ?, ?, ?, ?)';
+        connection.query(insertQuery, [name, email, mobile, address, username, password], (err, result) => {
+            if (err) {
+                console.error('Error inserting user:', err);
+                return res.status(500).send('Database error');
+            }
+            // Show success message and redirect to login page
+            res.send(`<script>alert('Registration successful! Please login now.'); window.location.href='/user';</script>`);
+        });
+    });
+});
 
-        // Close the MySQL connection
-        
+// User home route
+app.get("/userHome", (req, res) => {
+    if (req.session.userLoggedIn) {
+        const user = req.session.user; // Access logged-in user data
+        res.render("userHome.ejs", { username: user.username });
+    } else {
+        res.redirect("/user");
+    }
+});
+
+// Post content route
+app.get("/post-content", (req, res) => {
+    res.render("postContent.ejs");
+});
+
+// Submit content form
+app.post("/submit-content", upload.single("image"), (req, res) => {
+    const { title, content } = req.body;
+    const imagePath = req.file ? `uploads/${req.file.filename}` : null;
+
+    if (!imagePath) {
+        return res.status(400).send("Image upload failed.");
+    }
+
+    const query = "INSERT INTO posts (title, content, image_path) VALUES (?, ?, ?)";
+    connection.query(query, [title, content, imagePath], (err, result) => {
+        if (err) {
+            console.error("Error saving post:", err);
+            return res.status(500).send("Failed to save the post.");
+        }
+        res.send(`<script>alert('Post submitted successfully!'); window.location.href='/post-content';</script>`);
+    });
+});
+
+// Route to display all posts
+app.get('/view-all-posts', (req, res) => {
+    connection.query('SELECT * FROM posts ORDER BY created_at DESC', (err, posts) => {
+        if (err) {
+            console.error('Error fetching posts:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('viewPosts.ejs', { posts });
+    });
+});
+
+// Add comment route
+app.post('/add-comment', async (req, res) => {
+    const { postId, commentText } = req.body;
+
+    if (!postId || !commentText) {
+        return res.status(400).send("Post ID and comment text are required.");
+    }
+
+    try {
+        // Insert the comment into the database
+        await connection.promise().query("INSERT INTO comments (postId, username, text, createdAt) VALUES (?, ?, ?, ?)", [postId, req.session.user.username, commentText, new Date()]);
+        res.redirect(`/view-post/${postId}`); // Redirect back to the post's view page
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        res.status(500).send("Error adding comment");
+    }
+});
+app.get("/view-post/:id", async (req, res) => {
+    try {
+        const postId = req.params.id;
+
+        // Fetch the post details
+        const [post] = await connection.query('SELECT * FROM posts WHERE id = ?', [postId]);
+        if (post.length === 0) {
+            return res.status(404).send("Post not found");
+        }
+
+        // Fetch comments for the post
+        const comments = await connection.query('SELECT * FROM comments WHERE postId = ? ORDER BY createdAt DESC', [postId]);
+
+        // Render the post details page
+        res.render("viewPosts.ejs", { post: post[0], comments });
+    } catch (error) {
+        console.error("Error fetching post:", error);
+        res.status(500).send("Error retrieving post");
+    }
+});
+
+// Add category page route
+app.get("/add-category", (req, res) => {
+    if (!req.session.adminLoggedIn) {
+        return res.redirect("/admin");
+    }
+    // Pass the message variable (empty or with a value) to the template
+    res.render("addCategory", { message: req.session.message || "" });
+});
+
+// Handle category creation
+app.post("/add-category", (req, res) => {
+    const { categoryName } = req.body;
+
+    // Check if the category already exists
+    const checkCategoryQuery = "SELECT * FROM categories WHERE name = ?";
+    connection.query(checkCategoryQuery, [categoryName], (err, results) => {
+        if (err) {
+            console.error("Error checking category existence:", err);
+            return res.status(500).send("Error occurred. Please try again.");
+        }
+
+        if (results.length > 0) {
+            return res.send(
+                `<script>alert('Category already exists. Please choose another name.'); window.location.href='/add-category';</script>`
+            );
+        }
+
+        // Insert the new category
+        const insertCategoryQuery = "INSERT INTO categories (name) VALUES (?)";
+        connection.query(insertCategoryQuery, [categoryName], (err, result) => {
+            if (err) {
+                console.error("Error adding category:", err);
+                return res.status(500).send("Error occurred while adding category.");
+            }
+
+            res.send(
+                `<script>alert('Category added successfully!'); window.location.href='/add-category';</script>`
+            );
+        });
     });
 });
 
 
-app.get("/allottedDetails", (req, res) => {
-    // Query to retrieve system numbers that are free
-    const query = "SELECT sysno FROM systems WHERE sysstatus = 'allotted'";
+// Add words to a category page route
+app.get("/add-words", async (req, res) => {
+    if (!req.session.adminLoggedIn) {
+        return res.redirect("/admin");
+    }
 
-    connection.query(query, (error, results) => {
-        if (error) {
-            console.error("Error fetching free system numbers:", error);
-            res.status(500).send("Error fetching free system numbers");
-            return;
+    try {
+        const query = "SELECT * FROM categories";
+        const [categories] = await connection.promise().query(query); // Awaiting the query result
+
+        res.render("addWords.ejs", { categories });
+    } catch (err) {
+        console.error("Error fetching categories:", err);
+        return res.status(500).send("Database error");
+    }
+});
+
+app.post("/add-words", async (req, res) => {
+    if (!req.session.adminLoggedIn) {
+        return res.redirect("/admin");
+    }
+
+    const { category, word } = req.body;
+
+    if (!category || !word) {
+        return res.send("Please select a category and provide a word.");
+    }
+
+    try {
+        // Validate category_id exists in the categories table
+        const [categoryCheck] = await connection.promise().query("SELECT id FROM categories WHERE id = ?", [category]);
+        if (categoryCheck.length === 0) {
+            return res.send("Invalid category ID.");
         }
 
-        // Extract system numbers from the results
-        const freeSystemNumbers = results.map(result => result.sysno);
+        // Insert the word into the words table
+        const query = "INSERT INTO words (category_id, word) VALUES (?, ?)";
+        await connection.promise().query(query, [category, word]);
 
-        // Render the "free.ejs" template and pass the free system numbers data to it
-        res.render("allotted.ejs", { freeSystemNumbers });
+        res.redirect("/add-words"); // Redirect to the add words page with a success message
+    } catch (err) {
+        console.error("Error inserting word:", err);
+        return res.status(500).send("Database error");
+    }
+});
 
-        // Close the MySQL connection
-        
+// Fetch posts containing harmful words or categories
+app.get('/cyberharasser', (req, res) => {
+    if (!req.session.adminLoggedIn) {
+        return res.redirect('/admin'); // Redirect to admin login if not logged in
+    }
+
+    // Query to find posts with harmful content
+    const query = `
+        SELECT p.id AS post_id, p.title, p.content, w.word, c.name AS category
+        FROM posts p
+        LEFT JOIN words w ON p.content LIKE CONCAT('%', w.word, '%')
+        LEFT JOIN categories c ON p.content LIKE CONCAT('%', c.name, '%')
+        WHERE w.word IS NOT NULL OR c.name IS NOT NULL
+    `;
+
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching posts with harmful content:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        // Group posts based on harmful words or categories
+        const harmfulPosts = {};
+        results.forEach(({ post_id, title, content, word, category }) => {
+            if (!harmfulPosts[post_id]) {
+                harmfulPosts[post_id] = { title, content, matches: [] };
+            }
+            if (word) harmfulPosts[post_id].matches.push(`Word: ${word}`);
+            if (category) harmfulPosts[post_id].matches.push(`Category: ${category}`);
+        });
+
+        res.render('cyberharasser.ejs', { harmfulPosts });
     });
 });
 
-
-
-/*
-app.get("/allottedDetails",(req,res)=>{
-    res.render("allotted.ejs");
-})*/
-app.get("/student",(req,res)=>{
-    res.render("dash.ejs");
-})
-app.listen(port,()=>{
-    console.log("listening to the port:8080");
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
-
-
-
-
-

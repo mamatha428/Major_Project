@@ -1,83 +1,171 @@
-/* home.css */
-
+/* General Reset */
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #e8edf4; /* Light blue background */
+    color: #333;
 }
 
-.navbar {
-    background-color: #333;
-    overflow: hidden;
-    display: flex;
-    justify-content: space-between;
-    padding: 14px 20px;
-}
-
-.navbar .section a, .navbar .login a {
+ /* Header Styling */
+#header {
+    text-align: center;
+    background-color: #003366; /* Dark blue header */
     color: white;
+    padding: 20px 0;
+}
+
+#header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+#header p {
+    margin: 5px 0 0;
+    font-style: italic;
+    font-size: 1.2em;
+}
+
+/* Navigation Bar Styling */
+#topbar {
+    background-color: #004080; /* Slightly lighter blue for contrast */
+    overflow: hidden;
+}
+
+#topbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     text-align: center;
-    padding: 14px 20px;
-    text-decoration: none;
 }
 
-.navbar .section a:hover, .navbar .login a:hover {
-    background-color: #ddd;
-    color: black;
-}
-
-.section {
-    display: flex;
-}
-
-.login {
-    margin-left: auto;
-}
-.login button {
-    background-color: aqua;
-    border: none;
-    color: black;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
+#topbar ul li {
     display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
+    margin: 0;
+}
+
+#topbar ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.1em;
+    padding: 10px 20px;
     transition: background-color 0.3s ease;
 }
 
-.login button a {
-    color: black;
-    text-decoration: none;
+#topbar ul li a:hover {
+    background-color: #00509e; /* Slight hover effect */
 }
 
-.login button:hover {
-    background-color: #00ced1;
+/* Intro Section Styling */
+#intro {
+    display: flex;
+    background-color: #fff; /* White background for contrast */
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 1200px;
 }
 
-
-.background-image {
-    background-image: url('https://static2.bigstockphoto.com/2/6/3/large1500/362566981.jpg');
-    
-    background-size: cover;
-    background-position: center;
-    height: 500px; /* Adjust the height as needed */
-    width: 100%;
-    position: relative;
+#intro .fl_left {
+    flex: 1;
+    min-width: 200px;
+    padding-right: 20px;
 }
 
-.overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color:white; /*rgb(190, 69, 25);*/
+#intro .fl_left img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+#intro .fl_right {
+    flex: 2;
+    padding: 0 20px;
+}
+
+#intro h2 {
+    color: #003366;
+    margin-bottom: 15px;
+    font-size: 1.8em;
+}
+
+#intro p {
+    text-align: justify;
+    line-height: 1.6;
+    font-size: 1em;
+    color: #444;
+}
+
+/* Content Section Styling */
+#content {
+    padding: 20px;
     text-align: center;
+    background-color: #f1f5fa;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 1200px;
 }
 
-.overlay h1 {
-    font-size: 3em; /* Adjust the font size as needed */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Optional: adds a shadow to the text */
+#content h2 {
+    font-size: 2em;
+    color: #004080;
+}
+
+/* Footer Styling */
+#footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #003366; /* Dark blue footer */
+    color: white;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+#footer p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+/* Buttons Styling */
+button, input[type="submit"] {
+    background-color: #004080;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #00509e;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #intro {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #intro .fl_left, #intro .fl_right {
+        min-width: 100%;
+    }
+
+    #topbar ul {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    #topbar ul li {
+        display: block;
+        text-align: center;
+    }
 }

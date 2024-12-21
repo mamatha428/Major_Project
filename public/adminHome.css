@@ -1,0 +1,157 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e8edf4; /* Light blue background */
+    color: #333;
+  }
+  
+  /* Header Styling */
+  #header {
+    background: #003366; /* Dark blue header */
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+  }
+  
+  #header h1 {
+    font-size: 2.5em;
+    margin: 0;
+  }
+  
+  #header p {
+    margin: 5px 0 0;
+    font-style: italic;
+    font-size: 1.2em;
+  }
+  
+  /* Navigation Bar */
+  #topbar {
+    background: #004080; /* Slightly lighter blue for contrast */
+    overflow: hidden;
+  }
+  
+  #topbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+  
+  #topbar ul li {
+    display: inline-block;
+    margin: 0;
+  }
+  
+  #topbar ul li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    display: inline-block;
+    transition: background 0.3s ease;
+  }
+  
+  #topbar ul li a:hover {
+    background: #00509e; /* Slight hover effect */
+  }
+  
+  /* Intro Section */
+  #intro {
+    display: flex;
+    background: #fff; /* White background for contrast */
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 1200px;
+  }
+  
+  #intro .fl_left img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-right: 20px;
+  }
+  
+  #intro .fl_right {
+    flex: 1;
+  }
+  
+  #intro h2 {
+    color: #003366;
+    margin-bottom: 15px;
+    font-size: 1.8em;
+  }
+  
+  #intro p {
+    text-align: justify;
+    line-height: 1.6;
+    font-size: 1em;
+    color: #444;
+  }
+  
+  /* Admin Home Section */
+  #content {
+    text-align: center;
+    background: #f1f5fa;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 1200px;
+  }
+  
+  #content h2 {
+    color: #004080;
+  }
+  
+  /* Footer */
+  #footer {
+    background: #003366;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 20px;
+    font-size: 0.9em;
+  }
+  
+  #footer p {
+    margin: 0;
+  }
+  
+  /* Buttons */
+  button, input[type="submit"] {
+    background-color: #004080;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  button:hover, input[type="submit"]:hover {
+    background-color: #00509e;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    #intro {
+      flex-direction: column;
+    }
+  
+    #intro .fl_left {
+      margin: 0 auto 20px auto;
+    }
+  
+    #topbar ul li {
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+  

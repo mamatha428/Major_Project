@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Category</title>
+    <script>
+      // Show an alert if a message exists
+      document.addEventListener("DOMContentLoaded", () => {
+        const message = "<%= message %>";
+        if (message) {
+          alert(message);
+        }
+      });
+    </script>
+    <link rel="stylesheet" href="addCategory.css" />
+  </head>
+  <body>
+    <div id="top">
+      <header id="header">
+        <h1>RECOGNITION OF DIGITAL HARASSMENT</h1>
+        <p>ON WEB-BASED SOCIAL CHANNELS</p>
+      </header>
+      <nav id="topbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="add-category">Add Category</a></li>
+          <li><a href="add-words">Add Words</a></li>
+          <li><a href="cyberharasser">Cyber Harasser</a></li>
+          <li><a href="logout">Logout</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div id="content">
+      <h2>Add a New Category</h2>
+      <form action="/add-category" method="POST">
+        <label for="categoryName">Category:</label>
+        <input type="text" id="categoryName" name="categoryName" placeholder="Enter category name" required />
+        <button type="submit">Add Category</button>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin-Home</title>
+   
+    <script>
+      // Show an alert if a message exists
+      document.addEventListener("DOMContentLoaded", () => {
+          const message = "<%= message %>";
+          if (message) {
+              alert(message);
+          }
+      });
+  </script>
+   <link rel="stylesheet" href="adminHome.css" />
+  </head>
+  <body>
+    <div id="top">
+      <header id="header">
+        <h1>RECOGNITION OF DIGITAL HARASSMENT</h1>
+        <p>ON WEB-BASED SOCIAL CHANNELS</p>
+      </header>
+      <nav id="topbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="add-category">Add Category</a></li>
+          <li><a href="add-words">Add Words</a></li>
+          <li><a href="cyberharasser">Cyber Harasser</a></li>
+          <li><a href="logout">Logout</a></li>
+        </ul>
+      </nav>
+      <div id="intro">
+        <div class="fl_left">
+          <img src="images/bully.jpg" alt="Bully Image" />
+        </div>
+        <div class="fl_right">
+          <h2>About Project</h2>
+          <p>
+            Online predators try to gradually seduce their targets through attention,
+            affection, kindness, and even gifts, and often devote considerable time, money,
+            and energy to this effort. They are aware of the latest music and hobbies likely
+            to interest kids. They listen to and sympathize with kids' problems. They also try
+            to ease young people's inhibitions by gradually introducing sexual content into
+            their conversations or by showing them sexually explicit material.
+          </p>
+          <p>
+            <strong>Desired Solution:</strong> The solution will detect suspect profiles based
+            on child grooming behavior patterns, hate speech provokers, stalking and bullying
+            mentality profiles, and explicit content explorers (postings, comments) on social
+            media platforms and other websites.
+          </p>
+        </div>
+      </div>
+      <main id="content">
+        <h2>WELCOME TO ADMIN HOME</h2>
+      </main>
+      <footer id="footer">
+        <p>© 2024 Your Company. All rights reserved.</p>
+      </footer>
+    </div>
+  </body>
+</html>

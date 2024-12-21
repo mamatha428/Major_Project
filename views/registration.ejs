@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="registration.css">
+    
+</head>
+<body>
+    <div id="top">
+      <header id="header">
+        <h1>RECOGNITION OF DIGITAL HARASSMENT</h1>
+        <p>ON WEB-BASED SOCIAL CHANNELS</p>
+      </header>
+      <nav id="topbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="admin">Admin</a></li>
+          <li><a href="user">User</a></li>
+          <li><a href="registration">Registration</a></li>
+        </ul>
+      </nav>
+      <div id="intro">
+        <div class="fl_left">
+          <img src="images/bully.jpg" alt="Bully Image" style="width: 100%; border-radius: 8px;" />
+        </div>
+        <div class="fl_right">
+          <h2>About Project</h2>
+          <p>
+            Online predators try to gradually seduce their targets through attention,
+            affection, kindness, and even gifts, and often devote considerable time, money,
+            and energy to this effort. They are aware of the latest music and hobbies likely
+            to interest kids. They listen to and sympathize with kids' problems. They also try
+            to ease young people's inhibitions by gradually introducing sexual content into
+            their conversations or by showing them sexually explicit material.
+          </p>
+          <p>
+            <strong>Desired Solution:</strong> The solution will detect suspect profiles based
+            on child grooming behavior patterns, hate speech provokers, stalking and bullying
+            mentality profiles, and explicit content explorers (postings, comments) on social
+            media platforms and other websites.
+          </p>
+        </div>
+      </div>
+      <form action="register" method="post">
+        <h2 style="text-align: center;">Registration Form</h2>
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label for="mobile">Mobile:</label>
+          <input type="tel" id="mobile" name="mobile" required pattern="[0-9]{10}" placeholder="10-digit number" />
+        </div>
+        <div class="form-group">
+          <label for="address">Address:</label>
+          <textarea id="address" name="address" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <div class="form-actions">
+          <button type="submit">Register</button>
+          <button type="button" onclick="location.href='user'">Login</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
