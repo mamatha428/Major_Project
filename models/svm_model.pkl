@@ -1,0 +1,65 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report
+import joblib
+
+# Sample Data (replace this with your actual data)
+# Example: A dataset with 'text' and 'label' columns (1 for harassing, 0 for non-harassing)
+data = {
+    'text': [
+        "You are an idiot", 
+        "I love your work", 
+        "Shut up, loser", 
+        "That's a great idea", 
+        "You should leave", 
+        "Keep it up, you're amazing"
+    ],
+    'label': [1, 0, 1, 0, 1, 0]
+}
+
+# Convert to DataFrame
+df = pd.DataFrame(data)
+
+# Split data into features (X) and labels (y)
+X = df['text']
+y = df['label']
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Vectorize the text data using TF-IDF
+vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+# Initialize the SVM model
+svm_model = SVC(kernel='linear', C=1)
+
+# Train the model
+svm_model.fit(X_train_tfidf, y_train)
+
+# Evaluate the model on the test set
+y_pred = svm_model.predict(X_test_tfidf)
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+# Save the trained model and vectorizer for later use
+joblib.dump(svm_model, 'svm_model.pkl')
+joblib.dump(vectorizer, 'vectorizer.pkl')
+
+# Loading the model and vectorizer for prediction
+# Uncomment and run the below lines for prediction
+# svm_model = joblib.load('svm_model.pkl')
+# vectorizer = joblib.load('vectorizer.pkl')
+
+# Test with a new input text (example harassing/non-harassing comment)
+new_text = ["You are a genius", "I hate you so much"]
+new_text_tfidf = vectorizer.transform(new_text)
+predictions = svm_model.predict(new_text_tfidf)
+
+# Print the predictions (0 for non-harassing, 1 for harassing)
+for text, prediction in zip(new_text, predictions):
+    print(f"Text: '{text}' => Prediction: {'Harassing' if prediction == 1 else 'Non-Harassing'}")
